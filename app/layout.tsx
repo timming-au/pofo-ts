@@ -1,6 +1,8 @@
 import { Layout } from '@/components/dom/Layout'
 import '@/global.css'
+import Header from './head'
 
+// TODO: import head to here
 export const metadata = {
   title: 'Next.js + Three.js',
   description: 'A minimal starter for Nextjs + React-three-fiber and Threejs.',
@@ -13,7 +15,7 @@ export default function RootLayout({ children }) {
         <head /> will contain the components returned by the nearest parent
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
-      <head />
+      <Header/>
       <body>
         {/* To avoid FOUT with styled-components wrap Layout with StyledComponentsRegistry https://beta.nextjs.org/docs/styling/css-in-js#styled-components */}
         <Layout>{children}</Layout>
