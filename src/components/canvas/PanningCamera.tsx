@@ -8,7 +8,7 @@ interface CameraProps {
   tRot?: [x:number,y:number]
 }
 
-export default function PanningCamera({tPos = [0, 0, 10], tRot = [0, -0.3]}:CameraProps): JSX.Element {
+export const PanningCamera = ({tPos = [0, 0, 10], tRot = [0, -0.3]}:CameraProps): JSX.Element => {
   const { camera, pointer } = useThree()
 
   const targetPos: [x:number,y:number,z:number] = tPos

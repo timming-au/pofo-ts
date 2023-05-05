@@ -2,7 +2,8 @@ import { RenderTexture, PerspectiveCamera, Text } from '@react-three/drei'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import React from 'react'
-export default function LightCube() {
+
+export const LightCube = ({route = "/", ...props}):JSX.Element => {
   return (
     <>
       <group position={[0, -3, 3]}>
