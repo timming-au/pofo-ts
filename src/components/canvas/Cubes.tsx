@@ -7,20 +7,15 @@ import { maths, randHSL } from '@/helpers/utils'
 import React from 'react'
 import { CubeProps, FloorProps, instancerParams } from '@/types'
 
-export default function Blob({ route, ...props }) {
+export function Cubes({ ...props }) {
+
   class Pillar {
-    
     pillar:CubeProps[] = []
     cubesPerPillar: number = 5
     pos: [x:number,y:number,z:number]
     rot: [x:number,y:number,z:number]
     cubeSize: number
 
-    /**
-     * @param {{position:[x:number,y:number,z:number],rotation:[x:number,y:number,z:number]}} spawns - position & rotation of the pillar
-     * @param {number} cubesPerPillar - number of cubes in the pillar
-     * @param {number} cubeSize - size of the cube
-     */
     constructor(spawns: {position:[x:number,y:number,z:number],rotation:[x:number,y:number,z:number]}, cubesPerPillar, cubeSize) {
       this.pos = spawns.position
       this.rot = spawns.rotation
@@ -29,10 +24,6 @@ export default function Blob({ route, ...props }) {
       this.create()
     }
 
-    /**
-     * Generates cube properties
-     * @param {number} index - index of the cube
-     */
     cubePropsGen(index): CubeProps {
       let randPosMultiplier = 5
       let cubeProps: CubeProps = {
@@ -78,12 +69,6 @@ export default function Blob({ route, ...props }) {
     pillars: Pillar[] = []
     spawns: {position:[x:number,y:number,z:number],rotation:[x:number,y:number,z:number]}[] = []
 
-    /**
-     * @param {number} minCubesPerPillar - minimum number of cubes in the pillar
-     * @param {number} maxCubesPerPillar - maximum number of cubes in the pillar
-     * @param {number} pillarCount - number of pillars
-     * @param {number} cubeSize - size of cube
-     */
     constructor(floorProps, minCubesPerPillar, maxCubesPerPillar, pillarCount, cubeSize) {
       this.pos = floorProps.position
       this.rotation = floorProps.rotation
@@ -154,6 +139,7 @@ export default function Blob({ route, ...props }) {
       return this.pillars
     }
   }
+
   class Floor {
     position: [x:number,y:number,z:number]
     rotation: [x:number,y:number,z:number]
@@ -166,6 +152,7 @@ export default function Blob({ route, ...props }) {
       this.size = floorProps.size
       this.mesh = this.create()
     }
+
     create(): JSX.Element {
       let floor = (
         <mesh position={this.position} rotation={this.rotation}>
@@ -188,11 +175,13 @@ export default function Blob({ route, ...props }) {
       )
       return floor
     }
+
     get(): JSX.Element {
       return this.mesh
     }
   }
-  class TheScene {
+
+  class CubeScene {
     scene: THREE.Scene
     floor: Floor
     pf: PillarFactory
@@ -221,6 +210,7 @@ export default function Blob({ route, ...props }) {
       this.scene.background = new Color('rgb(0,0,0)')
     }
   }
+
   /**
    * Instancer
    */
@@ -250,6 +240,7 @@ export default function Blob({ route, ...props }) {
       ref.current.instanceMatrix.needsUpdate = true
       ref.current.instanceMatrix.setUsage(DynamicDrawUsage)
     })
+
     useFrame((state, delta) => {
       if (needToScale) {
         let index = 0
@@ -304,25 +295,31 @@ export default function Blob({ route, ...props }) {
     )
   }
 
+  
+  /**
+   * Define generation properties
+   */
   const FLOOR_PROPS:FloorProps = {
     position: [0, -4, 0],
     rotation: [-Math.PI / 2, 0, 0],
     size: [50, 50],
   }
-
-  const MIN_CUBES_PER_PILLAR = 10
-  const MAX_CUBES_PER_PILLAR = 15
-  const PILLAR_COUNT = 21
-  const CUBE_SIZE = 0.3
   const INSTANCE_PROPS = {
     initialScale: 0,
     maxScale: 2.5,
   }
+  const MIN_CUBES_PER_PILLAR = 10
+  const MAX_CUBES_PER_PILLAR = 15
+  const PILLAR_COUNT = 21
+  const CUBE_SIZE = 0.3
 
+  /**
+   * create scene
+   */
   const { scene } = useThree()
-  let theScene = new TheScene(scene)
-  let cubeProps = theScene.getCubesProps()
-  let floor = theScene.getFloor()
+  let cubeScene = new CubeScene(scene)
+  let cubeProps = cubeScene.getCubesProps()
+  let floor = cubeScene.getFloor()
 
   return (
     <>
@@ -331,3 +328,4 @@ export default function Blob({ route, ...props }) {
     </>
   )
 }
+

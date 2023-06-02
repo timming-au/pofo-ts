@@ -1,4 +1,4 @@
-import { PerspectiveCamera } from '@react-three/drei'
+import { PerspectiveCamera, useCursor } from '@react-three/drei'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
 import React from 'react'
@@ -10,7 +10,6 @@ interface CameraProps {
 
 export const PanningCamera = ({tPos = [0, 0, 10], tRot = [0, -0.3]}:CameraProps): JSX.Element => {
   const { camera, pointer } = useThree()
-
   const targetPos: [x:number,y:number,z:number] = tPos
  
   const targetRot: [x:number,y:number] = tRot

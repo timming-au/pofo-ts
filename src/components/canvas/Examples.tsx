@@ -1,9 +1,9 @@
 'use client'
 
 import { useGLTF } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { useMemo, useRef, useState } from 'react'
+import { use, useMemo, useRef, useState } from 'react'
 import { Line, useCursor, MeshDistortMaterial } from '@react-three/drei'
 import { useRouter } from 'next/navigation'
 
@@ -24,12 +24,13 @@ export const Blob = ({ route = '/main', ...props }) => {
 }
 
 export const Logo = ({ route = '/blob', ...props }) => {
+
   const mesh = useRef(null)
   const router = useRouter()
 
   const [hovered, hover] = useState(false)
   const points = useMemo(() => new THREE.EllipseCurve(0, 0, 3, 1.15, 0, 2 * Math.PI, false, 0).getPoints(100), [])
-
+  
   useCursor(hovered)
   useFrame((state, delta) => {
     const t = state.clock.getElapsedTime()
@@ -63,6 +64,5 @@ export function Duck(props) {
 }
 export function Dog(props) {
   const { scene } = useGLTF('/dog.glb')
-
-  return <primitive object={scene} {...props} />
+  return <primitive onPointerOver={() => {}} onPointerOut={() => {}} object={scene} {...props} />
 }
