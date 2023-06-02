@@ -73,3 +73,5 @@ export const maths:{
     },
   }
 }
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

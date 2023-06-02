@@ -1,24 +1,32 @@
-'use client'
-
 import { useFrame, useThree } from '@react-three/fiber'
 import dynamic from 'next/dynamic'
-
-const LightCube = dynamic(() => import('@/components/canvas/LightCube').then((mod) => mod.LightCube), { ssr: false })
-const PanningCamera = dynamic(() => import('@/components/canvas/PanningCamera').then((mod) => mod.PanningCamera), { ssr: false })
-const Effects = dynamic(() => import('@/components/canvas/Effects').then((mod) => mod.Effects), { ssr: false })
-const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {ssr:false})
-const Cubes = dynamic(() => import('@/components/canvas/Cubes').then((mod) => mod.Cubes), {ssr:false})
+import { Cubes } from '@/components/canvas/Cubes'
+import { LightCube } from '@/components/canvas/LightCube'
+import { PanningCamera } from '@/components/canvas/PanningCamera'
+import { Effects } from '@/components/canvas/Effects'
+import { Color } from 'three'
+import { Suspense } from 'react'
+import { FallbackBackground } from '@/components/canvas/FallbackBackground'
+import { Floor } from './Floor'
+import { FloorProps } from '@/types'
 
 export const Main = ({...props}):JSX.Element => {
-  console.log("RUN")
+  let floorProps: FloorProps = {
+    position: [0, -4, 0],
+    rotation: [-Math.PI / 2, 0, 0],
+    size: [50, 50],
+  }
   return (
-    <group onPointerOver={() => {}} onPointerOut={() => {}} >
-      <LightCube/>
-      <ambientLight intensity={0.01} />
-      <hemisphereLight groundColor='black' intensity={0.01} />
-      <PanningCamera />
-      <Effects />
-      <Cubes/>
-    </group>
+    <Suspense fallback={<FallbackBackground color={"#ff0000"}/>}>
+      <group {...props} onPointerOver={() => {}} onPointerOut={() => {}} >
+        <PanningCamera />
+        <LightCube/>
+        <ambientLight intensity={0.01} />
+        <hemisphereLight groundColor='black' intensity={0.01} />
+        <Effects />
+        <Floor floorProps={floorProps}/>
+        <Cubes floorProps={floorProps}/>
+      </group>
+    </Suspense>
   )
 }
