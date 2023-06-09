@@ -5,7 +5,7 @@ import { ColorRepresentation } from 'three'
 import { MeshReflectorMaterial } from '@react-three/drei'
 
 export const Floor:FC<{color?:ColorRepresentation, floorProps:FloorProps}> = ({color, floorProps, ...props}) => {
-
+  // can optimise by not setting mesh reflector material for the whole mesh.
   return (
     <mesh position={floorProps.position} rotation={floorProps.rotation}>
       <planeGeometry args={[...floorProps.size]}></planeGeometry>

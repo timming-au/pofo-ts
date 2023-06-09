@@ -20,6 +20,12 @@ const Layout = ({ children }) => {
     >
       {children}
       <Scene
+        camera={{
+          fov: 60
+        }}
+        gl={{
+          physicallyCorrectLights: true,
+        }}
         style={{
           position: 'fixed',
           top: 0,

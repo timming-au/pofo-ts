@@ -8,8 +8,8 @@ export const LightCube = ({route = "/", ...props}):JSX.Element => {
     <>
       <group position={[0, -3, 3]}>
         <ScreenText invert={undefined} />
-        <pointLight intensity={0.3} />
-        <rectAreaLight args={['white', 10, 1, 1]} rotation={[-Math.PI / 2, 0, 0]} />
+        <pointLight color={'#00e0d0'} distance={100} intensity={10} />
+        <rectAreaLight color={'#00e0d0'} intensity={10} width={10} height={4} rotation={[-Math.PI / 2, 0, 0]} />
       </group>
     </>
   )

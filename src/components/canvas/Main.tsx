@@ -14,7 +14,7 @@ export const Main = ({...props}):JSX.Element => {
   let floorProps: FloorProps = {
     position: [0, -4, 0],
     rotation: [-Math.PI / 2, 0, 0],
-    size: [50, 50],
+    size: [100, 50],
   }
   return (
     <Suspense fallback={<FallbackBackground color={"#ff0000"}/>}>

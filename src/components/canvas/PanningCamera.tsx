@@ -9,7 +9,7 @@ interface CameraProps {
   tRot?: [x:number,y:number]
 }
 
-export const PanningCamera = ({cameraPos = [0,-2,8], tPos = [0, -2, 10], tRot = [0, -0.3]}:CameraProps) => {
+export const PanningCamera = ({cameraPos = [0,-2,10], tPos = [0, -1, 10], tRot = [0, -0.3]}:CameraProps) => {
   const { camera, pointer } = useThree()
   const targetPos: [x:number,y:number,z:number] = tPos
   const targetRot: [x:number,y:number] = tRot
