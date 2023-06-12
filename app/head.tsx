@@ -10,6 +10,7 @@ export default function Header({ title = titleDefault, url = urlDefault }) {
   return (
     <Head>
       {/* Recommended Meta Tags */}
+
       <meta charSet='utf-8' />
       <meta name='language' content='english' />
       <meta httpEquiv='content-type' content='text/html' />

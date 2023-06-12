@@ -1,5 +1,6 @@
 'use client'
 
+import { useThree } from '@react-three/fiber'
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 

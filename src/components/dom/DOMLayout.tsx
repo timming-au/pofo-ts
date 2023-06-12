@@ -2,29 +2,21 @@
 
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
+import { Nav } from './Nav'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+const ThreeDee = dynamic(() => import('@/components/canvas/ThreeDee').then((mod) => mod.ThreeDee), { ssr: false })
 
-const Layout = ({ children }) => {
+const DOMLayout = ({ children }) => {
   const ref = useRef()
 
   return (
-    <div
-      ref={ref}
-      style={{
-        position: 'relative',
-        width: ' 100%',
-        height: '100%',
-        overflow: 'auto',
-        touchAction: 'auto',
-      }}
-    >
-      {children}
+    <>
       <Scene
         camera={{
-          fov: 60
+          fov: 60,
         }}
         gl={{
-          physicallyCorrectLights: true,
+          useLegacyLights: false,
         }}
         style={{
           position: 'fixed',
@@ -34,11 +26,14 @@ const Layout = ({ children }) => {
           height: '100vh',
           pointerEvents: 'none',
         }}
-        eventSource={ref}
         eventPrefix='client'
-      />
-    </div>
+      >
+        <ThreeDee color={'#181818'} />
+      </Scene>
+      {children}
+      <Nav />
+    </>
   )
 }
 
-export { Layout }
+export { DOMLayout }
