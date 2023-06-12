@@ -10,7 +10,17 @@ const DOMLayout = ({ children }) => {
   const ref = useRef()
 
   return (
-    <>
+    <div
+      id='root'
+      ref={ref}
+      style={{
+        position: 'relative',
+        width: ' 100%',
+        height: '100%',
+        overflow: 'auto',
+        touchAction: 'auto',
+      }}
+    >
       <Scene
         camera={{
           fov: 60,
@@ -26,13 +36,16 @@ const DOMLayout = ({ children }) => {
           height: '100vh',
           pointerEvents: 'none',
         }}
+        eventSource={ref}
         eventPrefix='client'
       >
         <ThreeDee color={'#181818'} />
       </Scene>
-      {children}
-      <Nav />
-    </>
+      <div className='relative sm:mx-[calc(2rem+1vw)] md:mx-[calc(3rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
+        <Nav />
+        {children}
+      </div>
+    </div>
   )
 }
 
