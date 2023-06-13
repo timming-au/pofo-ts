@@ -1,21 +1,19 @@
 import { PerspectiveCamera, useCursor } from '@react-three/drei'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 interface CameraProps {
-  cameraPos?: [x:number,y:number,z:number]
-  tPos?: [x:number,y:number,z:number]
-  tRot?: [x:number,y:number]
+  cameraPos?: [x: number, y: number, z: number]
+  tPos?: [x: number, y: number, z: number]
+  tRot?: [x: number, y: number]
 }
 
-export const PanningCamera = ({cameraPos = [0,-2,10], tPos = [0, -1, 10], tRot = [0, -0.3]}:CameraProps) => {
-  const { camera, pointer } = useThree()
-  const targetPos: [x:number,y:number,z:number] = tPos
-  const targetRot: [x:number,y:number] = tRot
-
-  camera.position.set(...cameraPos)
-  function pan(friction: number) {
+export const PanningCamera = ({ cameraPos = [0, -2, 10], tPos = [0, -1, 10], tRot = [0, -0.3] }: CameraProps) => {
+  const camera = useRef()
+  const targetPos: [x: number, y: number, z: number] = tPos
+  const targetRot: [x: number, y: number] = tRot
+  function pan(friction: number, camera, pointer) {
     let f = friction * 300
     let c = camera
     let [rex, rey] = [targetRot[1], targetRot[0]]
@@ -37,8 +35,8 @@ export const PanningCamera = ({cameraPos = [0,-2,10], tPos = [0, -1, 10], tRot =
     })
   }
   // optimise something here, don't make it run on every frame
-  useFrame(() => {
-    pan(0.8)
+  useFrame((state) => {
+    pan(0.8, state.camera, state.pointer)
   })
-  return <></>
+  return <PerspectiveCamera ref={camera} makeDefault position={cameraPos} fov={75} />
 }

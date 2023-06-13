@@ -5,7 +5,7 @@ import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three
 import { Three } from '@/helpers/components/Three'
 import { ColorRepresentation } from 'three'
 
-export const Common:FC<{color?:ColorRepresentation}> = ({ color }) => (
+export const Common: FC<{ color?: ColorRepresentation }> = ({ color }) => (
   <Suspense fallback={null}>
     {color && <color attach='background' args={[color]} />}
     <ambientLight intensity={0.5} />
@@ -15,7 +15,7 @@ export const Common:FC<{color?:ColorRepresentation}> = ({ color }) => (
   </Suspense>
 )
 
-const View = forwardRef(({ children, orbit, ...props }:any, ref) => {
+const View = forwardRef(({ children, orbit, ...props }: any, ref) => {
   const localRef = useRef(null)
   useImperativeHandle(ref, () => localRef.current)
 

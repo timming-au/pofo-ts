@@ -10,6 +10,9 @@ import { ThreeDee } from './ThreeDee'
 export default function Scene({ children, ...props }) {
   // Everything defined in here will persist between route changes, only children are swapped
   const [dpr, setDpr] = useState(1)
+  useEffect(() => {
+    console.log('Scene')
+  })
   // Everything defined in here will persist between route changes, only children are swapped
   return (
     <Canvas {...props}>
