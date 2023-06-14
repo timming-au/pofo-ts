@@ -1,7 +1,16 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Suspense, memo, useEffect, useMemo, useRef, useState } from 'react'
 import { MeshReflectorMaterial } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Vector3, Color, Object3D, DynamicDrawUsage, Scene } from 'three'
+import {
+  Vector3,
+  Color,
+  Object3D,
+  DynamicDrawUsage,
+  Scene,
+  NormalBufferAttributes,
+  BufferGeometry,
+  Material,
+} from 'three'
 import { maths, randHSL, sleep } from '@/helpers/utils'
 import React from 'react'
 import { CubeProps, FloorProps, instancerParams } from '@/types'
@@ -152,10 +161,9 @@ export const Cubes: FC<{ floorProps: FloorProps }> = ({ floorProps, ...props }) 
   }
 
   class CubeScene {
-    scene: THREE.Scene
     pf: PillarFactory
 
-    constructor(scene: Scene) {
+    constructor() {
       this.pf = new PillarFactory(floorProps, MIN_CUBES_PER_PILLAR, MAX_CUBES_PER_PILLAR, PILLAR_COUNT, CUBE_SIZE)
     }
 
@@ -170,7 +178,7 @@ export const Cubes: FC<{ floorProps: FloorProps }> = ({ floorProps, ...props }) 
   /**
    * Instancer
    */
-  function Instances({ spawnProps, initialScale, maxScale }: instancerParams) {
+  const Instances = memo(function Instances({ spawnProps, initialScale, maxScale }: instancerParams) {
     const ref = useRef(null)
     let scaleSpeed = 2
     let dummy = new Object3D()
@@ -178,81 +186,84 @@ export const Cubes: FC<{ floorProps: FloorProps }> = ({ floorProps, ...props }) 
     let needToScale = true
     let currentScales: Vector3[] = []
 
-    // useEffect(() => {
-    //   let index = 0
-    //   for (let i = 0; i < spawnProps.length; i++) {
-    //     for (let j = 0, props = spawnProps[i]; j < props.length; j++) {
-    //       // Set initial positions of the dummy
-    //       dummy.position.set(...props[j].pos)
-    //       dummy.rotation.set(...props[j].rot)
-    //       // @ts-ignore
-    //       let currentScale: Vector3 = new Vector3(...props[j].size.map((s) => s * initialScale))
-    //       dummy.scale.set(...currentScale.toArray())
-    //       currentScales.push(currentScale)
-    //       dummy.updateMatrix()
+    useEffect(() => {
+      let index = 0
+      for (let i = 0; i < spawnProps.length; i++) {
+        for (let j = 0, props = spawnProps[i]; j < props.length; j++) {
+          // Set initial positions of the dummy
+          dummy.position.set(...props[j].pos)
+          dummy.rotation.set(...props[j].rot)
+          // @ts-ignore
+          let currentScale: Vector3 = new Vector3(...props[j].size.map((s) => s * initialScale))
+          dummy.scale.set(...currentScale.toArray())
+          currentScales.push(currentScale)
+          dummy.updateMatrix()
 
-    //       // Set matrix of instance
-    //       ref.current.setMatrixAt(index, dummy.matrix)
-    //       ref.current.setColorAt(index, new Color(props[j].color))
-    //       targetScales.push(new Vector3(...props[j].size.map((s) => s * maxScale)))
-    //       index++
-    //     }
-    //   }
+          // Set matrix of instance
+          ref.current.setMatrixAt(index, dummy.matrix)
+          ref.current.setColorAt(index, new Color(props[j].color))
+          targetScales.push(new Vector3(...props[j].size.map((s) => s * maxScale)))
+          index++
+        }
+      }
 
-    //   // Update the instance
-    //   ref.current.instanceMatrix.needsUpdate = true
-    //   ref.current.instanceMatrix.setUsage(DynamicDrawUsage)
-    // })
+      // Update the instance
+      ref.current.instanceMatrix.needsUpdate = true
+      ref.current.instanceMatrix.setUsage(DynamicDrawUsage)
+    })
 
-    // useFrame((state, delta) => {
-    //   if (!ref.current) return
-    //   if (!needToScale) return
-    //   let tempVect = new Vector3()
-    //   let index = 0
-    //   for (let i = 0; i < spawnProps.length; i++) {
-    //     for (let j = 0, props = spawnProps[i]; j < props.length; j++) {
-    //       tempVect.set(0, 0, 0)
-    //       let currentScale = currentScales[index]
-    //       let targetScale = targetScales[index]
-    //       if (targetScale.x <= currentScale.x && targetScale.y <= currentScale.y && targetScale.z <= currentScale.z) {
-    //         // stop scaling
-    //         needToScale = false
-    //       } else {
-    //         // incase all cubes not at max scale
-    //         needToScale = true
-    //       }
+    useFrame((state, delta) => {
+      if (!ref.current) return
+      if (!needToScale) return
+      let tempVect = new Vector3()
+      let index = 0
+      for (let i = 0; i < spawnProps.length; i++) {
+        for (let j = 0, props = spawnProps[i]; j < props.length; j++) {
+          tempVect.set(0, 0, 0)
+          let currentScale = currentScales[index]
+          let targetScale = targetScales[index]
+          if (targetScale.x <= currentScale.x && targetScale.y <= currentScale.y && targetScale.z <= currentScale.z) {
+            // stop scaling
+            needToScale = false
+          } else {
+            // incase all cubes not at max scale
+            needToScale = true
+          }
 
-    //       // get current index's matrix
-    //       ref.current.getMatrixAt(index, dummy.matrix)
+          // get current index's matrix
+          ref.current.getMatrixAt(index, dummy.matrix)
 
-    //       // interpolate between current scale and target scale
-    //       currentScale.add(
-    //         tempVect
-    //           .subVectors(targetScale, currentScale)
-    //           .add(targetScale.clone().multiplyScalar(0.01))
-    //           .multiplyScalar(scaleSpeed * delta),
-    //       )
-    //       dummy.scale.set(...currentScale.toArray())
-    //       dummy.position.set(...props[j].pos)
-    //       dummy.rotation.set(...props[j].rot)
-    //       dummy.updateMatrix()
+          // interpolate between current scale and target scale
+          currentScale.add(
+            tempVect
+              .subVectors(targetScale, currentScale)
+              .add(targetScale.clone().multiplyScalar(0.01))
+              .multiplyScalar(scaleSpeed * delta),
+          )
+          dummy.scale.set(...currentScale.toArray())
+          dummy.position.set(...props[j].pos)
+          dummy.rotation.set(...props[j].rot)
+          dummy.updateMatrix()
 
-    //       ref.current.setMatrixAt(index, dummy.matrix)
-    //       index++
-    //     }
-    //   }
-    //   // tells the renderer that the instance matrix has changed and needs to be updated
-    //   ref.current.instanceMatrix.needsUpdate = true
-    //   ref.current.computeBoundingSphere()
-    // })
+          ref.current.setMatrixAt(index, dummy.matrix)
+          index++
+        }
+      }
+      // tells the renderer that the instance matrix has changed and needs to be updated
+      ref.current.instanceMatrix.needsUpdate = true
+      ref.current.computeBoundingSphere()
+    })
+    const boxGeometryArgs: [x: number, y: number, z: number] = useMemo(() => [1, 1, 1], [])
+    const meshArgs: [geometry: BufferGeometry<NormalBufferAttributes>, material: Material | Material[], count: number] =
+      useMemo(() => [null, null, spawnProps.flat().length], [spawnProps])
 
     return (
-      <instancedMesh ref={ref} args={[null, null, spawnProps.flat().length]}>
-        <boxGeometry args={[Math.random(), 1, 1]}></boxGeometry>
+      <instancedMesh ref={ref} args={meshArgs}>
+        <boxGeometry args={boxGeometryArgs}></boxGeometry>
         <meshLambertMaterial />
       </instancedMesh>
     )
-  }
+  })
 
   /**
    * Define generation properties
@@ -265,16 +276,17 @@ export const Cubes: FC<{ floorProps: FloorProps }> = ({ floorProps, ...props }) 
   const MAX_CUBES_PER_PILLAR = 15
   const PILLAR_COUNT = 20
   const CUBE_SIZE = 0.3
-
   /**
    * create scene
    */
-  const { scene } = useThree()
-  let cubeScene = new CubeScene(scene)
-  let cubeProps = cubeScene.getCubesProps()
+  const [spawnProps, setSpawnProps] = useState<CubeProps[][]>(new CubeScene().getCubesProps())
   return (
     <>
-      <boxGeometry args={[Math.random(), 1, 1]}></boxGeometry>
+      <Instances
+        spawnProps={spawnProps}
+        initialScale={INSTANCE_PROPS.initialScale}
+        maxScale={INSTANCE_PROPS.maxScale}
+      />
     </>
   )
 }

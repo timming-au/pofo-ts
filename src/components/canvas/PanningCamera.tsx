@@ -38,5 +38,5 @@ export const PanningCamera = ({ cameraPos = [0, -2, 10], tPos = [0, -1, 10], tRo
   useFrame((state) => {
     pan(0.8, state.camera, state.pointer)
   })
-  return <PerspectiveCamera ref={camera} makeDefault position={cameraPos} fov={75} />
+  return <PerspectiveCamera ref={camera} makeDefault position={cameraPos} fov={60} />
 }
