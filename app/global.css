@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #181818;
+  --secondary-color: #f0f0f0;
+  --accent-color:#ffac5f;
+}
 @layer base {
   * {
     box-sizing: border-box;
@@ -16,4 +21,16 @@
     padding: 0;
     overflow: hidden;
   }
+}
+
+.shape-fill{
+  fill: var(--accent-color);
+}
+
+.shape-border {
+  stroke: var(accent-color);
+}
+
+.shape-glow{
+  text-shadow: 0 0 10px var(--accent-color);
 }

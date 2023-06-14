@@ -14,9 +14,8 @@ export const Logo: FC<{ css?: string }> = ({ css, ...props }) => {
         fill='none'
         strokeLinecap='round'
         strokeLinejoin='round'
-        className='top-1 h-10 w-10'
       >
-        <circle cx='12' cy='12' r='10'></circle>
+        <circle cx='12' cy='10' r='8'></circle>
       </svg>
       <svg
         xmlns='http://www.w3.org/2000/svg'

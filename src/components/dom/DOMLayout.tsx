@@ -41,7 +41,7 @@ const DOMLayout = ({ children }) => {
       >
         <ThreeDee color={'#181818'} />
       </Scene>
-      <div className='relative sm:mx-[calc(2rem+1vw)] md:mx-[calc(3rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
+      <div className='relative mx-[calc(2rem+1vw)] md:mx-[calc(3rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
         <Nav />
         {children}
       </div>
