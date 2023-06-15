@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Nav } from './Nav'
+import { Cursor } from './Cursor'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 const ThreeDee = dynamic(() => import('@/components/canvas/ThreeDee').then((mod) => mod.ThreeDee), { ssr: false })
 
@@ -45,6 +46,7 @@ const DOMLayout = ({ children }) => {
         <Nav />
         {children}
       </div>
+      <Cursor />
     </div>
   )
 }

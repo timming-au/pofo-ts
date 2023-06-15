@@ -3,6 +3,7 @@ import { ShapeProps } from '@/types'
 import { FC, useEffect, useState, useRef, Dispatch, SetStateAction, useMemo } from 'react'
 import { maths } from '@/helpers/utils'
 import { gsap } from 'gsap'
+import { animated, useSpring, useSprings } from '@react-spring/web'
 
 export const Circle: FC<{ radius: number; className: string }> = ({ radius, className }) => {
   return (
@@ -185,8 +186,8 @@ export const Shaperize = ({ children, count, ...props }) => {
     return props
   }
   const shapeProps = useMemo(() => getProps(count), [count])
-
   useEffect(() => {
+    if (containerRef.current.children.length == 0) return
     for (let i = 0; i < shapeProps.length; i++) {
       const shape = shapeProps[i]
       gsap.to(containerRef.current.children[i], {
@@ -199,17 +200,20 @@ export const Shaperize = ({ children, count, ...props }) => {
     }
   })
   return (
-    <div ref={containerRef} className='relative z-50'>
-      {shapeProps.map((shapeProp, index) => (
-        <Shape
-          key={index}
-          size={shapeProp.size}
-          shape={shapeProp.shape}
-          rotation={0}
-          className='shape-fill shape-glow transform-gpu'
-          parentClassName='absolute -z-10 left-[50%] top-[50%]'
-        />
-      ))}
+    <div className='relative z-50'>
+      <div ref={containerRef} className='absolute h-full w-full'>
+        {useHasMounted() &&
+          shapeProps.map((shapeProp, index) => (
+            <Shape
+              key={index}
+              size={shapeProp.size}
+              shape={shapeProp.shape}
+              rotation={0}
+              className='shape-fill shape-glow transform-gpu'
+              parentClassName='absolute -z-10 left-[50%] top-[50%]'
+            />
+          ))}
+      </div>
       {children}
     </div>
   )

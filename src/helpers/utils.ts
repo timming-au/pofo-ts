@@ -123,6 +123,21 @@ export const useHasMounted = () => {
   return hasMounted
 }
 
+/**
+ * Hook for window event listeners
+ * @param event Event to listen for
+ * @param handler Function to run when event is triggered
+ * @param passive Whether the event is passive
+ */
+export default function useEvent(event, handler, passive = false) {
+  useEffect(() => {
+    // initiate the event handler
+    window.addEventListener(event, handler, passive);
+
+    // this will clean up the event every time the component is re-rendered
+    return () => window.removeEventListener(event, handler);
+  });
+}
 
 
 

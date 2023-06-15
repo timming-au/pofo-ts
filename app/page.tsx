@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import Persona from '../public/img/persona.webp'
 import { RandShape, Shape, Shaperize } from '@/components/dom/Shapes'
+import { Underline } from '@/components/dom/Modifiers'
 export default function Page() {
   return (
     <>
@@ -17,14 +18,21 @@ export default function Page() {
               <span>Ming,</span>
               <span>a</span>
               <span>Malaysian-based</span>
-              <span className='rounded-full border border-secondary px-4 font-medium lg:px-5 xl:px-6'>
+              <span
+                data-cursor={5}
+                data-magnet='magnet0.3'
+                className='rounded-full border border-secondary px-4 font-medium lg:px-5 xl:px-6'
+              >
                 Front&#8209;end
               </span>
               <span>developer</span>
-              <span>creating</span>
-              <span>aesthetic</span>
+              <span>passionate</span>
+              <span>about</span>
+              <span>
+                <Underline>aesthetic</Underline>
+              </span>
               <span>websites</span>
-              <span>to</span>
+              <span>that</span>
               <span>inscribe</span>
               <span>lasting</span>
               <span>impressions.</span>
@@ -33,7 +41,7 @@ export default function Page() {
         </div>
         <div className='flex w-[calc(50%+1rem)] shrink-0 items-center justify-center md:w-[calc(10%+12rem)]'>
           <Shaperize count={10}>
-            <div className='rounded-xl border-[1px] border-secondary p-2 md:p-4'>
+            <div className='rounded-xl border-[1px] border-secondary p-2 md:p-3'>
               <div className=' overflow-hidden rounded-xl'>
                 <Image priority src={Persona} alt='Persona' className='object-contain' />
               </div>
