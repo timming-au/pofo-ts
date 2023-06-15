@@ -1,5 +1,5 @@
-import { random } from 'gsap'
-import { FC } from 'react'
+import useHasMounted from '@/helpers/utils'
+import { FC, useEffect, useState } from 'react'
 
 export const Circle: FC<{ radius: number; className: string }> = ({ radius, className }) => {
   return (
@@ -10,8 +10,14 @@ export const Circle: FC<{ radius: number; className: string }> = ({ radius, clas
       strokeLinecap='round'
       strokeLinejoin='round'
       className={className}
+      width={24}
+      height={24}
+      style={{
+        width: radius * 2,
+        height: radius * 2,
+      }}
     >
-      <circle cx={radius / 2} cy={radius / 2} r={radius}></circle>
+      <circle cx={12} cy={12} r={12}></circle>
     </svg>
   )
 }
@@ -30,9 +36,11 @@ export const Square: FC<{ width: number; height: number; rotation?: number; clas
       strokeLinecap='round'
       strokeLinejoin='round'
       className={className}
-      style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center' }}
+      width={24}
+      height={24}
+      style={{ width: width, height: height, transform: `rotate(${rotation}deg)`, transformOrigin: 'center' }}
     >
-      <rect x={width / 2} y={height / 2} width={width} height={height} rx='2' ry='2'></rect>
+      <rect width={24} height={24} rx='2' ry='2'></rect>
     </svg>
   )
 }
@@ -50,11 +58,13 @@ export const Triangle: FC<{ base: number; height: number; rotation?: number; cla
       fill='none'
       strokeLinecap='round'
       strokeLinejoin='round'
+      width={base}
+      height={height}
       style={{
+        width: base,
+        height: height,
         transform: `rotate(${rotation}deg)`,
         transformOrigin: 'center',
-        width: `${base}px`,
-        height: `${height}px`,
       }}
       className={className}
     >
@@ -76,16 +86,19 @@ export const Shape: FC<{
   rotation: number
   className?: string
 }> = ({ size, shape, rotation, className }) => {
-  switch (shape) {
-    case 'triangle':
-      return <Triangle base={size} height={size} rotation={0} className={className} />
-    case 'square':
-      return <Square width={size} height={size} rotation={0} className={className} />
-    case 'circle':
-      return <Circle radius={size / 2} className={className} />
-  }
+  const hasMounted = useHasMounted()
+  return (
+    <div style={{ width: size, height: size, transform: `rotate(${rotation})deg` }}>
+      {hasMounted && shape === 'triangle' && (
+        <Triangle base={size} height={size} rotation={rotation} className={className} />
+      )}
+      {hasMounted && shape === 'square' && (
+        <Square width={size} height={size} rotation={rotation} className={className} />
+      )}
+      {hasMounted && shape === 'circle' && <Circle radius={size / 2} className={className} />}
+    </div>
+  )
 }
-
 /**
  * Returns a random shape
  * @param sizeLo Lower bound of the size
@@ -100,14 +113,20 @@ export const RandShape: FC<{ sizeLo: number; sizeHi: number; rotation?: number; 
   rotation = 0,
   className,
 }) => {
-  let shapes: ['triangle', 'square', 'circle'] = ['triangle', 'square', 'circle']
-  let shape = shapes[Math.floor(Math.random() * shapes.length)]
+  const [shape, setShape] = useState(null)
+  const [size, setSize] = useState(0)
+  const [randRotation, setRandRotation] = useState(0)
 
-  let size = Math.random() * (sizeHi - sizeLo) + sizeLo
+  useEffect(() => {
+    let shapes: ['triangle', 'square', 'circle'] = ['triangle', 'square', 'circle']
+    setShape(shapes[Math.floor(Math.random() * shapes.length)])
+    setSize(Math.random() * (sizeHi - sizeLo) + sizeLo)
+    setRandRotation(Math.random() * 360)
+  }, [sizeLo, sizeHi])
 
   if (!rotation) {
-    rotation = Math.random() * 360
+    rotation = randRotation
   }
 
-  return <Shape size={size} shape={shape} rotation={rotation} className={className} />
+  return <Shape size={size} shape={shape} rotation={0} className={className} />
 }

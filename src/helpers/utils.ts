@@ -1,4 +1,6 @@
 import { ColorRepresentation } from "three";
+import {useEffect, useState} from "react"
+
 export const randHSL: {
 
   /**
@@ -75,3 +77,16 @@ export const maths:{
 }
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+
+const useHasMounted = () => {
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
+  return hasMounted
+}
+
+export default useHasMounted

@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Persona from '../public/img/persona.webp'
-import { RandShape } from '@/components/dom/Shapes'
+import { RandShape, Shape } from '@/components/dom/Shapes'
 export default function Page() {
   return (
     <>
