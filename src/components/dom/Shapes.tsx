@@ -117,6 +117,9 @@ export const RandShape: FC<{ sizeLo: number; sizeHi: number; rotation?: number; 
   const [size, setSize] = useState(0)
   const [randRotation, setRandRotation] = useState(0)
 
+  /**
+   * Sets the shape and size. Prevents hydration mismatch too, due to the random nature of the component
+   */
   useEffect(() => {
     let shapes: ['triangle', 'square', 'circle'] = ['triangle', 'square', 'circle']
     setShape(shapes[Math.floor(Math.random() * shapes.length)])
