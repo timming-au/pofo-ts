@@ -32,5 +32,5 @@
 }
 
 .shape-glow{
-  text-shadow: 0 0 10px var(--accent-color);
+  filter: drop-shadow(0 0 10px var(--accent-color)); 
 }

@@ -1,5 +1,8 @@
-import useHasMounted from '@/helpers/utils'
-import { FC, useEffect, useState } from 'react'
+import { useHasMounted } from '@/helpers/utils'
+import { ShapeProps } from '@/types'
+import { FC, useEffect, useState, useRef, Dispatch, SetStateAction, useMemo } from 'react'
+import { maths } from '@/helpers/utils'
+import { gsap } from 'gsap'
 
 export const Circle: FC<{ radius: number; className: string }> = ({ radius, className }) => {
   return (
@@ -84,11 +87,12 @@ export const Shape: FC<{
   size: number
   shape: 'triangle' | 'square' | 'circle'
   rotation: number
+  parentClassName?: string
   className?: string
-}> = ({ size, shape, rotation, className }) => {
+}> = ({ size, shape, rotation, parentClassName, className }) => {
   const hasMounted = useHasMounted()
   return (
-    <div style={{ width: size, height: size, transform: `rotate(${rotation})deg` }}>
+    <div className={parentClassName} style={{ width: size, height: size, transform: `rotate(${rotation})deg` }}>
       {hasMounted && shape === 'triangle' && (
         <Triangle base={size} height={size} rotation={rotation} className={className} />
       )}
@@ -99,6 +103,25 @@ export const Shape: FC<{
     </div>
   )
 }
+
+/**
+ * Returns a random ShapeProps
+ * @param sizeLo Lower bound of the size
+ * @param sizeHi Upper bound of the size
+ * @param rotation Rotation of the shape
+ * @returns random ShapeProps
+ */
+const getRandShapeProps = (sizeLo: number, sizeHi: number, rotation?: number): ShapeProps => {
+  let shapes: ['triangle', 'square', 'circle'] = ['triangle', 'square', 'circle']
+  const props = {
+    size: Math.random() * (sizeHi - sizeLo) + sizeLo,
+    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    rotation: rotation ? rotation : Math.random() * 360,
+    position: null,
+  }
+  return props
+}
+
 /**
  * Returns a random shape
  * @param sizeLo Lower bound of the size
@@ -113,23 +136,81 @@ export const RandShape: FC<{ sizeLo: number; sizeHi: number; rotation?: number; 
   rotation = 0,
   className,
 }) => {
-  const [shape, setShape] = useState(null)
-  const [size, setSize] = useState(0)
-  const [randRotation, setRandRotation] = useState(0)
+  const [shapeProps, setShapeProps]: [ShapeProps, Dispatch<SetStateAction<ShapeProps>>] = useState({
+    size: 0,
+    shape: 'triangle',
+    rotation: 0,
+    position: null,
+  })
 
   /**
-   * Sets the shape and size. Prevents hydration mismatch too, due to the random nature of the component
+   * Set props. Prevents hydration mismatch with useEffect, due to the random nature of the component
    */
   useEffect(() => {
-    let shapes: ['triangle', 'square', 'circle'] = ['triangle', 'square', 'circle']
-    setShape(shapes[Math.floor(Math.random() * shapes.length)])
-    setSize(Math.random() * (sizeHi - sizeLo) + sizeLo)
-    setRandRotation(Math.random() * 360)
-  }, [sizeLo, sizeHi])
+    setShapeProps(getRandShapeProps(sizeLo, sizeHi, rotation))
+  }, [sizeLo, sizeHi, rotation])
 
-  if (!rotation) {
-    rotation = randRotation
+  return <Shape size={shapeProps.size} shape={shapeProps.shape} rotation={shapeProps.rotation} className={className} />
+}
+
+export const Shaperize = ({ children, count, ...props }) => {
+  const containerRef = useRef(null)
+  // const [shapes, setShapes]:[ShapeProps[], Dispatch<SetStateAction<ShapeProps[]>>] = useState([])
+  function getProps(count: number): ShapeProps[] {
+    const props = []
+    for (let i = 0; i < count; i++) {
+      let prop = getRandShapeProps(10, 30)
+      let [lower, upper] = [0, 100]
+      let [x, y] = maths.numberPairWithBoundary(lower, upper)
+
+      // Calculate the offset from elements using a random & scaling factor based on the size of the shape.
+      let offset = maths.between(0.3, 1) * prop.size
+
+      // process positions
+      if (x == lower || x == upper) {
+        if (x == lower) {
+          offset *= -1
+          offset -= prop.size
+        }
+      } else {
+        if (y == lower) {
+          offset *= -1
+          offset -= prop.size
+        }
+      }
+      prop.position = [`calc(${x}% + ${offset}px)`, `calc(${y}% + ${offset}px)`]
+
+      props.push(prop)
+    }
+    return props
   }
+  const shapeProps = useMemo(() => getProps(count), [count])
 
-  return <Shape size={size} shape={shape} rotation={0} className={className} />
+  useEffect(() => {
+    for (let i = 0; i < shapeProps.length; i++) {
+      const shape = shapeProps[i]
+      gsap.to(containerRef.current.children[i], {
+        duration: 2,
+        left: shape.position[0],
+        top: shape.position[1],
+        rotation: shape.rotation + 360,
+        ease: 'power4.out',
+      })
+    }
+  })
+  return (
+    <div ref={containerRef} className='relative z-50'>
+      {shapeProps.map((shapeProp, index) => (
+        <Shape
+          key={index}
+          size={shapeProp.size}
+          shape={shapeProp.shape}
+          rotation={0}
+          className='shape-fill shape-glow transform-gpu'
+          parentClassName='absolute -z-10 left-[50%] top-[50%]'
+        />
+      ))}
+      {children}
+    </div>
+  )
 }

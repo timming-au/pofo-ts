@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Persona from '../public/img/persona.webp'
-import { RandShape, Shape } from '@/components/dom/Shapes'
+import { RandShape, Shape, Shaperize } from '@/components/dom/Shapes'
 export default function Page() {
   return (
     <>
@@ -31,13 +31,14 @@ export default function Page() {
             </span>
           </div>
         </div>
-        <RandShape sizeLo={10} sizeHi={20} className={'shape-fill'} />
         <div className='flex w-[calc(50%+1rem)] shrink-0 items-center justify-center md:w-[calc(10%+12rem)]'>
-          <div className='rounded-xl border-[1px] border-secondary p-2 md:p-4'>
-            <div className=' overflow-hidden rounded-xl'>
-              <Image src={Persona} alt='Persona' className='object-contain' />
+          <Shaperize count={10}>
+            <div className='rounded-xl border-[1px] border-secondary p-2 md:p-4'>
+              <div className=' overflow-hidden rounded-xl'>
+                <Image priority src={Persona} alt='Persona' className='object-contain' />
+              </div>
             </div>
-          </div>
+          </Shaperize>
         </div>
       </div>
     </>

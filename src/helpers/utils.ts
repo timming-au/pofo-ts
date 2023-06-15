@@ -41,8 +41,13 @@ export const maths:{
    * @param {number} max 
    * @returns {number}
    */
-
   between: (min:number, max:number) => number,
+
+  /**
+   * Generates at least one of x or y is set to either 0 or 100, while the other number is randomly generated between 0 and 100.
+   * @returns {[number,number]} 
+   */
+  numberPairWithBoundary: (min:number,max:number) => [x:number,y:number],
 
   ease:{
     /**
@@ -65,6 +70,28 @@ export const maths:{
     return Math.floor(Math.random() * (max - min + 1) + min)
   },
 
+  numberPairWithBoundary: function(min,max){
+    const rand = Math.random();
+    let x:number, y:number;
+
+    if (rand < 0.5) {
+      if (rand < 0.25) {
+        x = min;
+      } else {
+        x = max;
+      }
+      y = this.between(0, 100);
+    } else {
+      x = this.between(0, 100);
+      if (rand < 0.75) {
+        y = min;
+      } else {
+        y = max;
+      }
+    }
+
+    return [x,y];
+  },
   ease:{
     inOutQuart: function(x) {
       return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
@@ -76,10 +103,17 @@ export const maths:{
   }
 }
 
+/**
+ * Sleeps for `ms` milliseconds
+ * @param ms Time to sleep
+ */
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-
-const useHasMounted = () => {
+/**
+ * Hook to check if the component has mounted
+ * @returns {boolean} State of whether the component has mounted
+ */
+export const useHasMounted = () => {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
@@ -89,4 +123,6 @@ const useHasMounted = () => {
   return hasMounted
 }
 
-export default useHasMounted
+
+
+
