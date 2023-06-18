@@ -5,11 +5,15 @@ import { gsap } from 'gsap'
 export const Cursor = () => {
   let isInteract = false
   let enter, leave
-  let props = {
+  let props: {
+    target: null | HTMLElement
+    magnetize: null | number
+    boundingRect: null | DOMRect
+  } = {
     target: null,
     magnetize: null,
+    boundingRect: null,
   }
-  let x, y, width, height
   const cursorRef = useRef(null)
   const [rotate, setRotate] = useState(null)
   useEffect(() => {
@@ -18,8 +22,8 @@ export const Cursor = () => {
         paused: true,
         yoyo: true,
         repeat: -1,
-        duration: 0.8,
-        ease: 'power1.inOut',
+        duration: 1.5,
+        ease: 'power2.inOut',
         rotate: 180,
       }),
     )
@@ -49,54 +53,58 @@ export const Cursor = () => {
       rotate: 0,
       ease: 'sine.out',
       scale: 1,
-      duration: 0.3,
+      duration: 0.5,
       filter: 'drop-shadow(0 0 1px white)',
     })
   }
-  function magnetize(event: any, width: number, height: number, x: number, y: number, strength: number): void {
+  function magnetize(event: MouseEvent, width: number, height: number, x: number, y: number, strength: number): void {
     gsap.to(event.target, {
       x: (event.clientX - (x + width / 2)) * strength,
       y: (event.clientY - (y + height / 2)) * strength,
       duration: 0.2,
     })
   }
-  function updateCursor(e) {
+  function updateCursor(e: MouseEvent) {
     if (props.target != e.target) {
       // reset previous magnetized element
       if (props.target != null) {
         if (typeof props.target.dataset.magnet !== 'undefined') {
-          if (props.target.dataset.magnet.includes('magnet')) {
-            gsap.to(props.target, {
-              x: 0,
-              y: 0,
-              duration: 0.8,
-              ease: 'elastic.out',
-            })
-          }
+          gsap.to(props.target, {
+            x: 0,
+            y: 0,
+            duration: 0.8,
+            ease: 'power4.out',
+          })
         }
       }
-      props.target = e.target
-      // magnetize elements
-      if (typeof props.target.dataset.magnet !== 'undefined') {
-        if (props.target.dataset.magnet.includes('magnet')) {
-          width = props.target.getBoundingClientRect().width
-          height = props.target.getBoundingClientRect().height
-          x = props.target.getBoundingClientRect().x
-          y = props.target.getBoundingClientRect().y
-        }
-      }
+      props.target = e.target as HTMLElement
       let data = props.target.dataset.magnet
       if (typeof data !== 'undefined') {
-        if (data.includes('magnet')) {
-          let magnitude = parseFloat(data.replace('magnet', ''))
-          props.magnetize = magnitude
-          magnetize(e, width, height, x, y, magnitude)
-        }
+        props.boundingRect = props.target.getBoundingClientRect()
+        let magnitude = parseFloat(data)
+        props.magnetize = magnitude
+        magnetize(
+          e,
+          props.boundingRect.width,
+          props.boundingRect.height,
+          props.boundingRect.x,
+          props.boundingRect.y,
+          magnitude,
+        )
       } else {
         props.magnetize = null
       }
     } else {
-      if (props.magnetize != null) magnetize(e, width, height, x, y, props.magnetize)
+      if (props.magnetize != null && props.boundingRect != null) {
+        magnetize(
+          e,
+          props.boundingRect.width,
+          props.boundingRect.height,
+          props.boundingRect.x,
+          props.boundingRect.y,
+          props.magnetize,
+        )
+      }
     }
     // animating hexagon when enter clickable element
     gsap.to(cursorRef.current, {
@@ -109,7 +117,7 @@ export const Cursor = () => {
 
     if (currentIsInteract != isInteract) {
       if (currentIsInteract == true) {
-        entering(props.target.dataset.cursor)
+        entering(parseFloat(props.target.dataset.cursor))
       } else {
         leaving()
       }
