@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Nav } from './Nav'
 import { Cursor } from './Cursor'
+import { View } from '../canvas/View'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 const ThreeDee = dynamic(() => import('@/components/canvas/ThreeDee').then((mod) => mod.ThreeDee), { ssr: false })
 
@@ -39,13 +40,14 @@ const DOMLayout = ({ children }) => {
         }}
         eventSource={ref}
         eventPrefix='client'
-      >
-        <ThreeDee color={'#181818'} />
-      </Scene>
+      ></Scene>
       <div className='relative mx-[calc(2rem+1vw)] md:mx-[calc(3rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
         <Nav />
         {children}
       </div>
+      {/* <View className='absolute top-0 flex h-screen w-full flex-col items-center justify-center'>
+        <ThreeDee color={'#181818'} />
+      </View> */}
       <Cursor />
     </div>
   )
