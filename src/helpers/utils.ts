@@ -65,8 +65,11 @@ export const maths:{
     inQuad: (x:number) => number,
   },
 
-  map:(x:number, imin:number, imax:number, omin:number, omax:number) => number
+  map:(x:number, imin:number, imax:number, omin:number, omax:number) => number,
 
+  max: (arr:number[] | Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array, range?:[start:number, end:number]) => number,
+
+  avg: (arr:number[] | Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array, range?:[start:number, end:number]) => number, 
 
 } = {
   between: function(min, max){
@@ -112,6 +115,32 @@ export const maths:{
     const mappedValue = normalizedX * (omax - omin) + omin;
 
     return mappedValue;
+  },
+
+  max: function(arr: number[] | Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array, range:[start:number, end:number] = [0,arr.length]): number {
+    if(arr.length <= 1 || range[0] - range[1] == 0) return arr[range[0]]
+
+    let max = arr[range[0]]
+    let i = range[0]+1
+    while (i < range[1]) {
+      if (arr[i] > max) {
+        max = arr[i];
+      }
+      i++;
+    }
+    return max;
+  },
+
+  avg: function (arr: number[] | Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array, range:[start:number, end:number] = [0,arr.length]): number {
+    if(arr.length <= 1 || range[0] - range[1] == 0) return arr[range[0]]
+    
+    let sum = 0;
+    let i = range[0]
+    while (i < range[1]) {
+      sum += arr[i];
+      i++;
+    }
+    return sum / (range[1] - range[0]);
   }
 }
 
