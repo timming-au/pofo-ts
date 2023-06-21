@@ -1,6 +1,6 @@
 'use client'
 
-import { View } from '@/components/canvas/View'
+import { Common, View } from '@/components/canvas/View'
 import { useFrame } from '@react-three/fiber'
 import { Perlin } from '@/helpers/utils'
 import { MutableRefObject, useRef, useState } from 'react'

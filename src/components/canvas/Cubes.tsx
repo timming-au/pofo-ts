@@ -11,7 +11,7 @@ import {
   BufferGeometry,
   Material,
 } from 'three'
-import { maths, randHSL, sleep } from '@/helpers/utils'
+import { maths, colors, sleep } from '@/helpers/utils'
 import React from 'react'
 import { CubeProps, FloorProps, instancerParams } from '@/types'
 import { FC } from 'react'
@@ -47,7 +47,7 @@ export const Cubes: FC<{ floorProps: FloorProps }> = ({ floorProps, ...props }) 
         ],
         // @ts-ignore
         size: [this.cubeSize, this.cubeSize, this.cubeSize].map((x) => x + (Math.random() * x) / 3),
-        color: randHSL.noColor(),
+        color: colors.randHSL.noColor(),
       }
       return cubeProps
     }

@@ -1,37 +1,160 @@
 import { ColorRepresentation } from "three";
 import {useEffect, useState} from "react"
 
-export const randHSL: {
+
+export const colors:{
+  randHSL: {
+    /**
+     * Returns a random color
+     * @returns {import("three").ColorRepresentation}
+     */
+    default: () => ColorRepresentation;
+    
+    /**
+     * Returns a pastel color
+     * @returns {import("three").ColorRepresentation}
+     */
+    pastel: () => ColorRepresentation;
+
+    /**
+     * Returns a monochrome color
+     * @returns {import("three").ColorRepresentation}
+     */
+    noColor: () => ColorRepresentation;
+  },
+  /**
+   * Saturates a color by a given amount.
+   * @param r Red value (0-1)
+   * @param g Green value (0-1)
+   * @param b Blue value (0-1)
+   * @param amount Amount to saturate (0-1 saturation, HSL)
+   * @returns [r,g,b]
+   */
+  vibrantise:(r:number, g:number, b:number, amount:number) => [r:number,g:number,b:number],
 
   /**
-   * Returns a random color
-   * @returns {import("three").ColorRepresentation}
+   * Converts RGB to HSV.
+   * @param r Red value (0-1)
+   * @param g Green value (0-1)
+   * @param b Blue value (0-1)
+   * @returns [h,s,v]
    */
-  default: () => ColorRepresentation;
-  
-  /**
-   * Returns a pastel color
-   * @returns {import("three").ColorRepresentation}
-   */
-  pastel: () => ColorRepresentation;
+  rgbToHsv:(r:number, g:number, b:number) => [h:number,s:number,v:number],
 
   /**
-   * Returns a monochrome color
-   * @returns {import("three").ColorRepresentation}
+   * Converts HSV to RGB.
+   * @param h Hue (0-1)
+   * @param s Saturation (0-1)
+   * @param v Value (0-255)
+   * @returns [r,g,b]
    */
-  noColor: () => ColorRepresentation;
-} = {
-  default: function(){
-    return `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`
+  hsvToRgb:(h:number, s:number, v:number) => [r:number,g:number,b:number]
+
+  /**
+   * Boosts a color.
+   * @param r Red value (0-255)
+   * @param g Green value (0-255)
+   * @param b Blue value (0-255)
+   * @param amount Amount to boost (0-255)
+   * @param threshold Difference needed to boost the smaller between two colors (0-255), defaults to 0
+   * @returns [r,g,b]
+   */
+  boostRGB:(r:number, g:number, b:number, amount:number, threshold?:number) => [r:number,g:number,b:number],
+
+}={
+  randHSL: {
+    default: function(){
+      return `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`
+    },
+
+    pastel: function(){
+      return `hsl(${Math.floor(Math.random() * 360)}, ${Math.random() * 10 + 80}%, 75%)`
+    },
+
+    noColor: function(){
+      return `hsl(100, 0%, ${Math.random() * 40 + 30}%)`
+    }
   },
 
-  pastel: function(){
-    return `hsl(${Math.floor(Math.random() * 360)}, ${Math.random() * 10 + 80}%, 75%)`
+  vibrantise:function(r, g, b, amount) {
+    // Convert RGB to HSL
+    const [h, s, l] = this.rgbToHsv(r, g, b);
+
+    // Modify saturation
+    const saturatedS = Math.min(1, Math.max(0, s + amount));
+
+    // Convert HSL back to RGB
+    const [red, green, blue] = this.hsvToRgb(h, saturatedS, l);
+
+    return [red, green, blue];
   },
 
-  noColor: function(){
-    return `hsl(100, 0%, ${Math.random() * 40 + 30}%)`
-  }
+  rgbToHsv:function(r, g, b) {
+    let max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, v = max;
+
+    let d = max - min;
+    s = max == 0 ? 0 : d / max;
+
+    if (max == min) {
+        h = 0; // achromatic
+    } else {
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, v];
+  },
+
+  hsvToRgb:function(h, s, v) {
+    let r, g, b;
+
+    let i = Math.floor(h * 6);
+    let f = h * 6 - i;
+    let p = v * (1 - s);
+    let q = v * (1 - f * s);
+    let t = v * (1 - (1 - f) * s);
+
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+
+    return [r, g, b];
+  },
+
+  boostRGB:function(r, g, b, amount, threshold = 0) {
+    const diff1 = Math.abs(r - g);
+    const diff2 = Math.abs(r - b);
+    const diff3 = Math.abs(g - b);
+
+    if (diff1 <= threshold && diff2 <= threshold && diff3 <= threshold) {
+      // All three colors are within the threshold, no boosting
+      return [r, g, b];
+    }
+
+    const max = Math.max(r, g, b);
+
+    if (r === max || (diff1 <= threshold && diff2 > threshold && diff3 > threshold)) {
+      r = Math.min(255, r + amount);
+    }
+    if (g === max || (diff1 > threshold && diff2 <= threshold && diff3 > threshold)) {
+      g = Math.min(255, g + amount);
+    }
+    if (b === max || (diff1 > threshold && diff2 > threshold && diff3 <= threshold)) {
+      b = Math.min(255, b + amount);
+    }
+
+    return [r, g, b];
+  },
 }
 
 export const maths:{

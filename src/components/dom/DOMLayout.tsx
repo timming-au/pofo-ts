@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { Nav } from './Nav'
 import { Cursor } from './Cursor'
 import { View } from '../canvas/View'
+import { SRGBColorSpace, sRGBEncoding } from 'three'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 const ThreeDee = dynamic(() => import('@/components/canvas/ThreeDee').then((mod) => mod.ThreeDee), { ssr: false })
 
@@ -29,6 +30,7 @@ const DOMLayout = ({ children }) => {
         }}
         gl={{
           useLegacyLights: false,
+          outputColorSpace: SRGBColorSpace,
         }}
         style={{
           position: 'fixed',
