@@ -10,9 +10,9 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
 })
-
 const nextConfig = {
-  // uncomment the following snippet if using styled components
+  output: 'export',
+  // uncomment the folloyarwing snippet if using styled components
   // compiler: {
   //   styledComponents: true,
   // },

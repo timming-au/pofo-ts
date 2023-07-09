@@ -1,6 +1,6 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { Perlin } from '@/helpers/utils'
-import { Dispatch, MutableRefObject, SetStateAction, memo, useEffect, useRef, useState } from 'react'
+import { Dispatch, MutableRefObject, SetStateAction, memo, use, useEffect, useRef, useState } from 'react'
 import {
   AudioLoader,
   Audio,
@@ -17,8 +17,8 @@ import {
   Matrix3,
 } from 'three'
 import { maths, colors } from '@/helpers/utils'
-import Song from '../../../public/sounds/sample.mp3'
-import { MeshDistortMaterial, OrbitControls } from '@react-three/drei'
+import Song from '../../../public/sounds/lofi2.mp3'
+import { MeshDistortMaterial, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import router from 'next/router'
 import { Common } from './View'
 
@@ -145,11 +145,20 @@ export const Jukebox = memo(function Jukebox() {
       sound.play()
     }
   }
+
+  // adjust camera
+  useThree(({ camera }) => {
+    camera.position.set(0, 0, 3)
+  })
   return (
     <>
       <ambientLight ref={light} color={0xffffff} intensity={1} />
-      <OrbitControls></OrbitControls>
-      <mesh onClick={() => juke()} ref={sphere}>
+      <mesh
+        onClick={() => juke()}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        ref={sphere}
+      >
         <sphereGeometry args={[1, 48, 32]} />
         <meshLambertMaterial wireframe></meshLambertMaterial>
       </mesh>
