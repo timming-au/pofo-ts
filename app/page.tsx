@@ -4,6 +4,7 @@ import Persona from '../public/img/persona.webp'
 import { RandShape, Shape, Shaperize } from '@/components/dom/Shapes'
 import { Underline } from '@/components/dom/components/Modifiers'
 import dynamic from 'next/dynamic'
+import Scroll from '@/helpers/Scroll'
 
 const Index = dynamic(() => import('@/components/dom/content/index'))
 const About = dynamic(() => import('@/components/dom/content/about'))
