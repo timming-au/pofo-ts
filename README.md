@@ -1,3 +1,2 @@
-# my-app
-
-This project was bootstrapped with [`create-r3f-app`](https://github.com/utsuboco/create-r3f-app)
+# My portfolio
+Hello. The current state of the website is in shambles, and I am frequently upgrading it.
