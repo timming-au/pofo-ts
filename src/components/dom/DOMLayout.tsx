@@ -43,7 +43,7 @@ const DOMLayout = ({ children }) => {
         eventSource={ref}
         eventPrefix='client'
       ></Scene>
-      <div className='relative mx-[calc(2rem+1vw)] md:mx-[calc(3rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
+      <div className='relative mx-[calc(1rem+1vw)] md:mx-[calc(2rem+1vw)] lg:mx-[calc(5rem+1vw)]'>
         <Nav />
         {children}
       </div>
